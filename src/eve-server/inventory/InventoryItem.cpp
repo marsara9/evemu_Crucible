@@ -1073,13 +1073,20 @@ void InventoryItem::NotifyItemChange(
 
     std::map<Client*, bool> clients;
     auto current_ib = sInventoryManager.Find(locationID());
+    if(current_ib == nullptr) {
+        // The destination InventoryBound isn't ready yet, so there's nothing to do.
+        return;
+    }
+
     auto current_clients = current_ib->GetBoundClients();
     clients.insert(current_clients.begin(), current_clients.end());
     if(changes.count(Inv::Update::Location) > 0) {
         auto old_location = PyRep::IntegerValueU32(changes.at(Inv::Update::Location));
         auto old_ib = sInventoryManager.Find(old_location);
-        auto old_clients = old_ib->GetBoundClients();
-        clients.insert(old_clients.begin(), old_clients.end());
+        if(old_ib != nullptr) {
+            auto old_clients = old_ib->GetBoundClients();
+            clients.insert(old_clients.begin(), old_clients.end());
+        }
     }
 
     for(auto client = clients.begin(); client != clients.end(); client++) {
@@ -1088,7 +1095,7 @@ void InventoryItem::NotifyItemChange(
             tmp->Dump(ITEM__CHANGE, "    ");
         }
         if (client->first->IsCharCreation())
-            return;
+            continue;
 
         client->first->SendNotification("OnItemChange", "clientID", &tmp, false); //unsequenced.  <<-- this is for single items
     }
