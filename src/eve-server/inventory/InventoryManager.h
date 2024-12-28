@@ -32,9 +32,9 @@
 
 class InventoryManager : public Singleton<InventoryManager> {
 public:
-    InventoryBound* InventoryManager::Find(uint32 containerID);
+    InventoryBound* Find(uint32 containerID);
 
-    void InventoryManager::Add(
+    void Add(
         uint32 containerID,
         InventoryBound* bound
     );
