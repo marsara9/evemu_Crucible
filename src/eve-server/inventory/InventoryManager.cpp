@@ -27,21 +27,11 @@
 
 #include "InventoryManager.h"
 
-/**
- * Searches for an existing InventoryBound for the provided containerID.
- * If one is found a reference to its InventoryBound will be returned,
- * otherwise `nullptr` is returned instead.
- */
-InventoryBound* InventoryManager::Find(
-    uint32 containerID
-) {
-    // auto bound = m_inventoryBoundMap.find(containerID);
-    // if(bound == m_inventoryBoundMap.end()) {
-    //     return nullptr;
-    // } else {
-    //     return bound->second;
-    // }
-    return nullptr;
+InventoryBound* InventoryManager::Find(uint32 containerID) {
+    if(m_boundMap.count(containerID) == 0) {
+        return nullptr;
+    }
+    return m_boundMap.at(containerID);
 }
 
 void InventoryManager::Add(
@@ -49,10 +39,12 @@ void InventoryManager::Add(
     InventoryBound* bound
 ) {
     _log(INV__BIND, "Creating InventoryBound for %u.", containerID);
-    m_inventoryBoundMap[containerID] = bound;
+    if(!m_boundMap.insert(BoundEntry(containerID, bound))) {
+        _log(INV__WARNING, "InventoryBound already exists for %u. Skipping add.", containerID);
+    }
 }
 
 void InventoryManager::Remove(uint32 containerID) {
     _log(INV__BIND, "Disposing of InventoryBound for %s.", containerID);
-    m_inventoryBoundMap.erase(containerID);
+    m_boundMap.erase(containerID);
 }

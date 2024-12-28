@@ -32,18 +32,41 @@
 
 class InventoryManager : public Singleton<InventoryManager> {
 public:
+    /**
+     * Searches for an existing InventoryBound for the provided containerID.
+     * If one is found a reference to its InventoryBound will be returned,
+     * otherwise `nullptr` is returned instead.
+     * 
+     * @param containerID The itemID of the container in which to find the associated InventoryBound.
+     * @returns The associated InventoryBound or nullptr if no match exists.
+     */
     InventoryBound* Find(uint32 containerID);
 
+    /**
+     * Adds the provided InventoryBound to be cached.
+     * 
+     * @param containerID The containerID that should be used for future lookups.  This should 
+     *   be the itemID of the container in which the InventoryBound is for.
+     * @param bound The InventoryBound to cache.
+     */
     void Add(
         uint32 containerID,
         InventoryBound* bound
     );
 
+    /**
+     * Removes any InventoryBound associated with the given containerID.
+     */
     void Remove(uint32 containerID);
 private:
-    std::map<uint32, InventoryBound*> m_inventoryBoundMap;
+    typedef std::map<uint32, InventoryBound*> BoundMap;
+    typedef std::pair<uint32, InventoryBound*> BoundEntry;
+
+    BoundMap m_boundMap;
 };
 
+// Should this be a singleton? 
+// Can we use dependency injection somehow instead?
 #define sInventoryManager \
  ( InventoryManager::get() )
 
