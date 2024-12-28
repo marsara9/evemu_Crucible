@@ -1072,7 +1072,9 @@ bool InventoryBound::Release(Client* client) {
     // freed when its removed from the InventoryManager.
     //return EVEBoundObject::Release(client);
 
-    if(!CanClientCall(client)) {
+    auto clients = GetBoundClients();
+    auto it = clients.find(client);
+    if(it == clients.end()) {
         return false;
     }
 
