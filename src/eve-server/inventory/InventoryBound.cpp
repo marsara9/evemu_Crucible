@@ -1058,13 +1058,13 @@ PyResult InventoryBound::Build(PyCallArgs &call) {
     return nullptr;
 }
 
-void InventoryBound::NewReference(Client* newClient) override {
+void InventoryBound::NewReference(Client* newClient) {
     sInventoryManager.Add(m_self->itemID, this);
 
     EVEBoundObject::NewReference(newClient);
 }
 
-bool InventoryBound::Release(Client* client) override {
+bool InventoryBound::Release(Client* client) {
     sInventoryManager.Remove(this);
 
     EVEBoundObject::Release(client);
