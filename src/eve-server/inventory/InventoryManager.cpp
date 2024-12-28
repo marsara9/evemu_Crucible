@@ -23,6 +23,8 @@
     Author:        MarSara9
 */
 
+#include "eve-server.h"
+
 #include "InventoryManager.h"
 
 /**
