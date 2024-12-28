@@ -300,10 +300,6 @@ public:
         return this->mClients.find (client) != this->mClients.end();
     }
 
-    void RemoveClient(Client *client) override {
-        this->mClients.erase(client);
-    }
-
     /** @returns BoundID The id of the bound service */
     BoundID GetBoundID() const override { return this->mBoundId; }
     /** @returns The normal service that created this service */
