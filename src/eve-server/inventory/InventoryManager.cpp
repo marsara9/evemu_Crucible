@@ -39,7 +39,7 @@ void InventoryManager::Add(
     InventoryBound* bound
 ) {
     _log(INV__BIND, "Creating InventoryBound for %u.", containerID);
-    if(!m_boundMap.insert(BoundEntry(containerID, bound))) {
+    if(!m_boundMap.insert(BoundEntry(containerID, bound)).second) {
         _log(INV__WARNING, "InventoryBound already exists for %u. Skipping add.", containerID);
     }
 }
