@@ -687,7 +687,7 @@ void InventoryItem::Donate(uint32 new_owner/*ownerSystem*/, uint32 new_location/
             } else {
                 _log(ITEM__ERROR, "II::Donate() - Cant find location %u containing %s.", m_data.locationID, m_data.name.c_str());
             }
-        }.value();
+        }
     }
 
     // update data
@@ -828,7 +828,7 @@ void InventoryItem::Relocate(uint32 locID, EVEItemFlags flag) {
 
     InventoryItemRef iRef(nullptr);
     uint32 old_location = m_data.locationID;
-    EVEItemFlags old_flag = m_data.flag;.value();
+    EVEItemFlags old_flag = m_data.flag;
     // update data
     m_data.flag = flag;
     m_data.locationID = locID;
@@ -909,7 +909,7 @@ void InventoryItem::MergeTypesInCargo(ShipItem* pShip, EVEItemFlags flag/*flagNo
         return;
     }
     // fix for elusive error when using IB::Add() to remove loaded modules (charge trying to add to module item)
-    if (iRef->typeID() != m_type.id()) {.value();
+    if (iRef->typeID() != m_type.id()) {
         Move(pShip->itemID(), flag, true);
         return;
     }
@@ -1076,7 +1076,7 @@ void InventoryItem::NotifyItemChange(
     auto current_clients = current_ib->GetBoundClients();
     clients.insert(current_clients.begin(), current_clients.end());
     if(changes.count(Inv::Update::Location) > 0) {
-        uint32 old_location = changes.at(Inv::Update::Location)->IntegerValueU32();
+        auto old_location = PyRep::IntegerValueU32(changes.at(Inv::Update::Location));
         auto old_ib = sInventoryManager.Find(old_location);
         auto old_clients = old_ib->GetBoundClients();
         clients.insert(old_clients.begin(), old_clients.end());
@@ -1087,11 +1087,10 @@ void InventoryItem::NotifyItemChange(
             _log(ITEM__CHANGE, "Sending Item changes for %s(%u)", m_data.name.c_str(), m_itemID);
             tmp->Dump(ITEM__CHANGE, "    ");
         }
-
-        if (client->IsCharCreation())
+        if (client->first->IsCharCreation())
             return;
 
-        client->SendNotification("OnItemChange", "clientID", &tmp, false); //unsequenced.  <<-- this is for single items
+        client->first->SendNotification("OnItemChange", "clientID", &tmp, false); //unsequenced.  <<-- this is for single items
     }
 }
 
