@@ -27,7 +27,7 @@
 
 #include "InventoryManager.h"
 
-std::shard_ptr<InventoryBound> InventoryManager::Find(uint32 containerID) {
+std::shared_ptr<InventoryBound> InventoryManager::Find(uint32 containerID) {
     _log(INV__INFO, "InventoryManager::Find(%u)", containerID);
     if(m_boundMap.count(containerID) == 0) {
         _log(INV__WARNING, "No InventoryBound for %u.", containerID);
@@ -40,7 +40,7 @@ std::shard_ptr<InventoryBound> InventoryManager::Find(uint32 containerID) {
 
 void InventoryManager::Add(
     uint32 containerID,
-    std::shard_ptr<InventoryBound> ib
+    std::shared_ptr<InventoryBound> ib
 ) {
     _log(INV__BIND, "Adding InventoryBound for %u.", containerID);
     if(m_boundMap.count(containerID) != 0 && m_boundMap.at(containerID) != ib) {

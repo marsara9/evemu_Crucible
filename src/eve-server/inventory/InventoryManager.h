@@ -59,8 +59,8 @@ public:
      */
     void Remove(uint32 containerID);
 private:
-    typedef std::map<uint32, std::shard_ptr<InventoryBound>> BoundMap;
-    typedef std::pair<uint32, std::shard_ptr<InventoryBound>> BoundEntry;
+    typedef std::map<uint32, std::shared_ptr<InventoryBound>> BoundMap;
+    typedef std::pair<uint32, std::shared_ptr<InventoryBound>> BoundEntry;
 
     BoundMap m_boundMap;
 };
