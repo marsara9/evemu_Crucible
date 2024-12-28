@@ -32,6 +32,7 @@
 #include "StaticDataMgr.h"
 #include "inventory/InventoryBound.h"
 #include "inventory/InvBrokerService.h"
+#include "inventory/InventoryManager.h"
 #include "planet/CustomsOffice.h"
 #include "planet/Planet.h"
 #include "planet/Colony.h"
@@ -485,6 +486,8 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
             continue;
         }
 
+        auto originLocationID = iRef.get()->locationID;
+
         if (iRef->typeID() == EVEDB::invTypes::Bookmark) {
             // update this to keep owner/creator and other data
             iRef->Donate(m_ownerID, m_itemID, toFlag);
@@ -610,6 +613,20 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
         } else {
             pInventory->ValidateAddItem(toFlag, iRef);  // this will throw if it fails
             iRef->Donate(m_ownerID, m_itemID, toFlag);
+        }
+
+        auto origin = sInventoryManager.Find(originLocationID);
+        auto originClients = origin->GetBoundClients();
+        auto destinationClients = GetBoundClients();
+        for(auto client = originClients.begin(); client < originClients.end(); client++) {
+            std::map<int32, PyRep *> changes;
+            changes[Inv::Update::Location] = new PyInt(old_location);
+            iRef->SendItemChange(iRef->itemID(), changes);
+        }
+        for(auto client = destinationClients.begin(); client < destinationClients.end(); client++) {
+            std::map<int32, PyRep *> changes;
+            changes[Inv::Update::Location] = new PyInt(old_location);
+            iRef->SendItemChange(iRef->itemID(), changes);
         }
     }
 
@@ -1039,4 +1056,16 @@ PyResult InventoryBound::Build(PyCallArgs &call) {
     oSE->SpawnStationService(call.client, stData, EVEDB::invTypes::LaboratoryService);
 
     return nullptr;
+}
+
+void InventoryBound::NewReference(Client* newClient) override {
+    sInventoryManager.Add(m_self->itemID, this);
+
+    EVEBoundObject::NewReference(newClient);
+}
+
+bool InventoryBound::Release(Client* client) override {
+    sInventoryManager.Remove(this);
+
+    EVEBoundObject::Release(client);
 }

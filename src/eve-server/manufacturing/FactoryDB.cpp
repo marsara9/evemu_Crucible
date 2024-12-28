@@ -257,7 +257,7 @@ PyRep *FactoryDB::AssemblyLinesSelectPublic(const uint32 regionID) {
     DBQueryResult res;
 
     if (!sDatabase.RunQuery(res,
-        "SELECT"
+        "SELECT DISTINCT"
         " station.stationID AS containerID,"
         " station.stationTypeID AS containerTypeID,"
         " station.solarSystemID AS containerLocationID,"
@@ -283,7 +283,7 @@ PyRep *FactoryDB::AssemblyLinesSelectPersonal(const uint32 charID) {
     DBQueryResult res;
 
     if (!sDatabase.RunQuery(res,
-        "SELECT"
+        "SELECT DISTINCT"
         " station.stationID AS containerID,"
         " station.stationTypeID AS containerTypeID,"
         " station.solarSystemID AS containerLocationID,"
@@ -307,7 +307,7 @@ PyRep *FactoryDB::AssemblyLinesSelectPrivate(const uint32 charID) {
     DBQueryResult res;
 
     if (!sDatabase.RunQuery(res,
-        "SELECT"
+        "SELECT DISTINCT"
         " station.stationID AS containerID,"
         " station.stationTypeID AS containerTypeID,"
         " station.solarSystemID AS containerLocationID,"
@@ -331,7 +331,7 @@ PyRep *FactoryDB::AssemblyLinesSelectCorporation(const uint32 corpID) {
     DBQueryResult res;
 
     if (!sDatabase.RunQuery(res,
-        "SELECT"
+        "SELECT DISTINCT"
         " station.stationID AS containerID,"
         " station.stationTypeID AS containerTypeID,"
         " station.solarSystemID AS containerLocationID,"
@@ -355,8 +355,21 @@ PyRep *FactoryDB::AssemblyLinesSelectCorporation(const uint32 corpID) {
 PyRep *FactoryDB::AssemblyLinesSelectAlliance(const int32 allianceID) {
     DBQueryResult res;
 
+    // SELECT
+    //     job.containerId,
+    //     station.stationTypeId AS containerTypeId,
+    //     station.solarSystemId AS containerLocationId,
+    //     job.typeId as assemblyLineTypeId,
+    //     COUNT(job.containerId) as quantity,
+    //     station.corporationId as ownerId
+    //     FROM industrySlots AS job 
+    //         JOIN evemu.staStations AS station ON station.stationId = job.containerId
+    //         JOIN evemu.crpCorporation AS corp ON corp.corporationId = station.corporationId
+    //     GROUP BY job.containerId, job.typeId;
+
+
     if (!sDatabase.RunQuery(res,
-        "SELECT"
+        "SELECT DISTINCT"
         " station.stationID AS containerID,"
         " station.stationTypeID AS containerTypeID,"
         " station.solarSystemID AS containerLocationID,"
@@ -380,6 +393,24 @@ PyRep *FactoryDB::AssemblyLinesSelectAlliance(const int32 allianceID) {
 /** @todo  need to add check/query for POS assembly modules here */
 PyRep *FactoryDB::AssemblyLinesGet(const uint32 containerID) {
     DBQueryResult res;
+
+    // SELECT
+    //     job.jobId as assemblyLineID,
+    //     job.typeId as assemblyLineTypeID,
+    //     job.containerId,
+    //     0 as nextFreeTime,
+    //     0 as costInstall,
+    //     0 as costPerHour,
+    //     0 as restrictionMask,
+    //     0 as discountPerGoodStandingPoint,
+    //     0 as surchargePerBadStandingPoint,
+    //     0 as minimumStanding,
+    //     0 as minimumCharSecurity,
+    //     0 as minimumCorpSecurity,
+    //     0 as maximumCharSecurity,
+    //     0 as maximumCorpSecurity
+    //     FROM industrySlots as job
+    //     where containerId = 61000002;
 
     if (!sDatabase.RunQuery(res,
         "SELECT"

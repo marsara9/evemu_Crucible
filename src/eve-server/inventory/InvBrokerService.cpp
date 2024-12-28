@@ -34,6 +34,7 @@
 #include "StaticDataMgr.h"
 #include "inventory/InvBrokerService.h"
 #include "inventory/InventoryBound.h"
+#include "inventory/InventoryManager.h"
 #include "station/StationDataMgr.h"
 #include "station/StationOffice.h"
 #include "system/SystemManager.h"
@@ -240,7 +241,17 @@ PyResult InvBrokerBound::GetInventoryFromId(PyCallArgs &call, PyInt* inventoryID
         }
     }
 
-    InventoryBound* ib = new InventoryBound(this->GetServiceManager(), reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), iRef, flag, ownerID, passive->value());
+    InventoryBound* ib = sInventoryManager.Find(iRef->itemID);
+    if(ib == nullptr) {
+        ib = new InventoryBound(
+            this->GetServiceManager(), 
+            reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
+            iRef, 
+            flag, 
+            ownerID, 
+            passive->value()
+        );
+    }
 
     ib->NewReference(call.client);
 
@@ -332,8 +343,18 @@ PyResult InvBrokerBound::GetInventory(PyCallArgs &call, PyInt* containerID, std:
             _log(INV__ERROR, "Unhandled container type %u for locationID %u", containerID->value(), m_locationID);
             return nullptr;
     }
-
-    InventoryBound* ib = new InventoryBound(this->GetServiceManager(), reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), item, flag, ownerID, false);
+    
+    InventoryBound* ib = sInventoryManager.Find(item);
+    if(ib == nullptr) {
+        ib = new InventoryBound(
+            this->GetServiceManager(), 
+            reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
+            item, 
+            flag, 
+            ownerID, 
+            false
+        );
+    }
 
     ib->NewReference(call.client);
 
