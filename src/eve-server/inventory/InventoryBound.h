@@ -31,7 +31,7 @@
 #include "inventory/InventoryManager.h"
 #include "Client.h"
 
-class InventoryBound : public EVEBoundObject <InventoryBound>, public enable_shared_from_this<InventoryBound>
+class InventoryBound : public EVEBoundObject <InventoryBound>, public std::enable_shared_from_this<InventoryBound>
 {
 public:
     InventoryBound(EVEServiceManager &mgr, BoundServiceParent<InventoryBound>& parent, InventoryItemRef item, EVEItemFlags flag, uint32 ownerID,  bool passive);
