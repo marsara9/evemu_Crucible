@@ -45,11 +45,11 @@ void InventoryManager::Add(
     uint32 containerID,
     InventoryBound* bound
 ) {
-    _log(INV__ERROR, "Creating InventoryBound for %u.", containerID);
+    _log(INV__BIND, "Creating InventoryBound for %u.", containerID);
     m_inventoryBoundMap[containerID] = bound;
 }
 
 void InventoryManager::Remove(uint32 containerID) {
-    _log(INV__ERROR, "Disposing of InventoryBound for %s.", containerID);
+    _log(INV__BIND, "Disposing of InventoryBound for %s.", containerID);
     m_inventoryBoundMap.erase(containerID);
 }
