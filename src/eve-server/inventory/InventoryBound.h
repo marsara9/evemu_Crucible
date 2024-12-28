@@ -28,12 +28,26 @@
 
 
 #include "services/BoundService.h"
+#include "inventory/InventoryManager.h"
 #include "Client.h"
 
 class InventoryBound : public EVEBoundObject <InventoryBound>
 {
 public:
     InventoryBound(EVEServiceManager &mgr, BoundServiceParent<InventoryBound>& parent, InventoryItemRef item, EVEItemFlags flag, uint32 ownerID,  bool passive);
+
+    void InventoryBound::NewReference(Client* newClient) override {
+        sInventoryManager.Add(m_self->itemID, this);
+
+        EVEBoundObject::NewReference(newClient);
+    }
+
+    bool InventoryBound::Release(Client* client) override {
+        sInventoryManager.Remove(this);
+
+        EVEBoundObject::Release(client);
+    }
+
 
 protected:
     PyResult GetItem(PyCallArgs& call);
