@@ -28,6 +28,8 @@
 #include "InventoryManager.h"
 
 std::shared_ptr<InventoryBound> InventoryManager::Find(uint32 containerID) {
+    ReadLock r_lock(m_lock);
+
     _log(INV__INFO, "InventoryManager::Find(%u)", containerID);
     if(m_boundMap.count(containerID) == 0) {
         _log(INV__WARNING, "No InventoryBound for %u.", containerID);
@@ -42,15 +44,20 @@ void InventoryManager::Add(
     uint32 containerID,
     std::shared_ptr<InventoryBound> ib
 ) {
+    WriteLock w_lock(m_lock);
+
     _log(INV__BIND, "Adding InventoryBound for %u.", containerID);
     if(m_boundMap.count(containerID) != 0 && m_boundMap.at(containerID) != ib) {
-        _log(INV__WARNING, "InventoryBound (%u) already exists for %u. Skipping add.", ib->GetBoundID(), containerID);
+        auto existing = m_boundMap.at(containerID);
+        _log(INV__WARNING, "InventoryBound (%u) already exists for %u. Skipping adding (%u).", existing->GetBoundID(), containerID, ib->GetBoundID());
         return;
     }
     m_boundMap.insert(BoundEntry(containerID, ib));
 }
 
 void InventoryManager::Remove(uint32 containerID) {
+    WriteLock w_lock(m_lock);
+
     _log(INV__BIND, "Disposing of InventoryBound for %u.", containerID);
     m_boundMap.erase(containerID);
 }

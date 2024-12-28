@@ -26,6 +26,8 @@
 #ifndef __INVENTORY_MANAGER__H__INCL__
 #define __INVENTORY_MANAGER__H__INCL__
 
+#include <shared_mutex>
+
 #include "InventoryBound.h"
 #include "InvBrokerService.h"
 #include "ItemRef.h"
@@ -61,6 +63,11 @@ public:
 private:
     typedef std::map<uint32, std::shared_ptr<InventoryBound>> BoundMap;
     typedef std::pair<uint32, std::shared_ptr<InventoryBound>> BoundEntry;
+    typedef std::shared_mutex Lock;
+    typedef std::unique_lock<Lock> WriteLock;
+    typedef std::shared_lock<Lock> ReadLock;
+
+    Lock m_lock;
 
     BoundMap m_boundMap;
 };
