@@ -43,7 +43,7 @@ void InventoryManager::Add(
     InventoryBound* ib
 ) {
     _log(INV__BIND, "Adding InventoryBound for %u.", containerID);
-    if(m_boundMap.count(containerID) != 0 && m_boundMap.at(containerID) != bound) {
+    if(m_boundMap.count(containerID) != 0 && m_boundMap.at(containerID) != ib) {
         _log(INV__WARNING, "InventoryBound (%u) already exists for %u. Skipping add.", ib->GetBoundID(), containerID);
         return;
     }
