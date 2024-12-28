@@ -1081,7 +1081,7 @@ void InventoryItem::NotifyItemChange(
     auto current_clients = current_ib->GetBoundClients();
     clients.insert(current_clients.begin(), current_clients.end());
     if(changes.count(Inv::Update::Location) > 0) {
-        auto old_location = PyRep::IntegerValueU32(changes.at(Inv::Update::Location));
+        auto old_location = changes.at(Inv::Update::Location)->AsInt()->value();
         auto old_ib = sInventoryManager.Find(old_location);
         if(old_ib != nullptr) {
             auto old_clients = old_ib->GetBoundClients();
