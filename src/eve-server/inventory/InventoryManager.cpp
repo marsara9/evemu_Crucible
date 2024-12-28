@@ -37,7 +37,7 @@ InventoryBound* InventoryManager::Find(
     if(bound == m_inventoryBoundMap.end()) {
         return nullptr;
     } else {
-        return bound->second();
+        return bound->second;
     }
 }
 
