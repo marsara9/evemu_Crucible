@@ -25,7 +25,7 @@
 
 #include "BoundService.h"
 
-void EVEBoundObject::NewReference (Client* client) {
+void EVEBoundObject<Bound>::NewReference (Client* client) {
     // ensure the client is not there yet
     auto it = this->mClients.find (client);
 
@@ -42,7 +42,7 @@ void EVEBoundObject::NewReference (Client* client) {
  * @brief Signals this EVEBoundObject that one of the clients that held a reference, released it
  * @returns Whether the bound object was destroyed or someone still has a reference to it
  */
-bool EVEBoundObject::Release(Client* client) {
+bool EVEBoundObject<Bound>::Release(Client* client) {
     auto it = this->mClients.find (client);
 
     // the client doesn't have access to this bound service, so nothing has to be done
