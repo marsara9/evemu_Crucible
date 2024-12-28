@@ -68,6 +68,8 @@ protected:
      * @brief Check performed before dispatching a call to this bound service
      */
     virtual bool CanClientCall(Client* client) = 0;
+
+    virtual void RemoveClient(Client *client) = 0;
 };
 /**
  * Parent for any of the bound services
@@ -290,6 +292,10 @@ public:
         return this->mClients.find (client) != this->mClients.end();
     }
 
+    void RemoveClient(Client *client) override {
+        this->mClients.erase(client);
+    }
+
     /** @returns BoundID The id of the bound service */
     BoundID GetBoundID() const override { return this->mBoundId; }
     /** @returns The normal service that created this service */
@@ -302,10 +308,6 @@ public:
     EVEServiceManager& GetServiceManager() const { return this->mManager; }
     /** @returns The list of clients that requested access to this service */
     const std::map <Client*, bool>& GetBoundClients () const { return this->mClients; }
-
-    void RemoveClient(Client *client) {
-        this->mClients.erase(client);
-    }
 private:
     /** @var The service manager this bound service is registered in */
     EVEServiceManager& mManager;
