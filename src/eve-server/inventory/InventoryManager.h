@@ -40,7 +40,7 @@ public:
      * @param containerID The itemID of the container in which to find the associated InventoryBound.
      * @returns The associated InventoryBound or nullptr if no match exists.
      */
-    std::shard_ptr<InventoryBound> Find(uint32 containerID);
+    std::shared_ptr<InventoryBound> Find(uint32 containerID);
 
     /**
      * Adds the provided InventoryBound to be cached.
@@ -51,7 +51,7 @@ public:
      */
     void Add(
         uint32 containerID,
-        std::shard_ptr<InventoryBound> ib
+        std::shared_ptr<InventoryBound> ib
     );
 
     /**
