@@ -40,7 +40,7 @@ public:
      * @param containerID The itemID of the container in which to find the associated InventoryBound.
      * @returns The associated InventoryBound or nullptr if no match exists.
      */
-    InventoryBound* Find(uint32 containerID);
+    std::shard_ptr<InventoryBound> Find(uint32 containerID);
 
     /**
      * Adds the provided InventoryBound to be cached.
@@ -51,7 +51,7 @@ public:
      */
     void Add(
         uint32 containerID,
-        InventoryBound* ib
+        std::shard_ptr<InventoryBound> ib
     );
 
     /**
@@ -59,8 +59,8 @@ public:
      */
     void Remove(uint32 containerID);
 private:
-    typedef std::map<uint32, InventoryBound*> BoundMap;
-    typedef std::pair<uint32, InventoryBound*> BoundEntry;
+    typedef std::map<uint32, std::shard_ptr<InventoryBound>> BoundMap;
+    typedef std::pair<uint32, std::shard_ptr<InventoryBound>> BoundEntry;
 
     BoundMap m_boundMap;
 };

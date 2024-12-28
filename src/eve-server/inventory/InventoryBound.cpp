@@ -1059,15 +1059,29 @@ PyResult InventoryBound::Build(PyCallArgs &call) {
 }
 
 void InventoryBound::NewReference(Client* newClient) {
-    //sInventoryManager.Add(m_self->itemID(), this);
+    sInventoryManager.Add(m_self->itemID(), shared_from_this());
 
     EVEBoundObject::NewReference(newClient);
 }
 
 bool InventoryBound::Release(Client* client) {
-    if (GetBoundClients().empty()) {
-        sInventoryManager.Remove(m_self->itemID());
+    // **DO NOT** call base implementation as references
+    // to this class are managed by InventoryManager,
+    // and we cannot manually delete this reference.
+    // Instead this reference will be automatically
+    // freed when its removed from the InventoryManager.
+    //return EVEBoundObject::Release(client);
+
+    if(!CanClientCall(client)) {
+        return false;
     }
 
-    return EVEBoundObject::Release(client);
+    RemoveClient(client);
+
+    if(GetBoundClients().empty()) {
+        sInventoryManager.Remove(m_self->itemID());
+        return true;
+    }
+
+    return false;
 }

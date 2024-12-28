@@ -302,6 +302,10 @@ public:
     EVEServiceManager& GetServiceManager() const { return this->mManager; }
     /** @returns The list of clients that requested access to this service */
     const std::map <Client*, bool>& GetBoundClients () const { return this->mClients; }
+
+    void RemoveClient(Client *client) {
+        this->mClients.erase(client);
+    }
 private:
     /** @var The service manager this bound service is registered in */
     EVEServiceManager& mManager;
