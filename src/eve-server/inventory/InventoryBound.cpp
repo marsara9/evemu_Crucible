@@ -616,13 +616,15 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
         }
 
         auto origin = sInventoryManager.Find(originLocationID);
-        auto originClients = origin->GetBoundClients();
-        auto destinationClients = GetBoundClients();
-        for(auto client = originClients.begin(); client != originClients.end(); client++) {
-            std::map<int32, PyRep *> changes;
-            changes[Inv::Update::Location] = new PyInt(originLocationID);
-            iRef->SendItemChange(iRef->itemID(), changes);
+        if(origin != nullptr) {
+            auto originClients = origin->GetBoundClients();
+            for(auto client = originClients.begin(); client != originClients.end(); client++) {
+                std::map<int32, PyRep *> changes;
+                changes[Inv::Update::Location] = new PyInt(originLocationID);
+                iRef->SendItemChange(iRef->itemID(), changes);
+            }
         }
+        auto destinationClients = GetBoundClients();
         for(auto client = destinationClients.begin(); client != destinationClients.end(); client++) {
             std::map<int32, PyRep *> changes;
             changes[Inv::Update::Location] = new PyInt(originLocationID);
