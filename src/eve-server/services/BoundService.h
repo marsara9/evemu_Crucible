@@ -58,6 +58,8 @@ public:
      * @brief Increases the number of references to this bound object
      */
     virtual void NewReference (Client* client) = 0;
+
+    virtual bool SafeRelease(Client* client) = 0;
     /**
      * @brief Releases this dispatcher and frees any kept resources
      * @returns Whether the bound object was destroyed or someone still has a reference to it
@@ -68,8 +70,6 @@ protected:
      * @brief Check performed before dispatching a call to this bound service
      */
     virtual bool CanClientCall(Client* client) = 0;
-
-    virtual void RemoveClient(Client *client) = 0;
 };
 /**
  * Parent for any of the bound services
@@ -265,11 +265,8 @@ public:
         // also add it to the bind list of the client
         client->AddBindID (this->GetBoundID ());
     }
-    /**
-     * @brief Signals this EVEBoundObject that one of the clients that held a reference, released it
-     * @returns Whether the bound object was destroyed or someone still has a reference to it
-     */
-    virtual bool Release(Client* client) override {
+
+    bool SafeRelease(Client *client) override {
         auto it = this->mClients.find (client);
 
         // the client doesn't have access to this bound service, so nothing has to be done
@@ -281,11 +278,22 @@ public:
 
         if (this->mClients.size () == 0) {
             this->GetParent ().BoundReleased (reinterpret_cast <Bound*> (this));
-            delete this; // we hate this
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @brief Signals this EVEBoundObject that one of the clients that held a reference, released it
+     * @returns Whether the bound object was destroyed or someone still has a reference to it
+     */
+    virtual bool Release(Client* client) override {
+        bool result = SafeRelease(client);
+        if(result) {
+            delete this; // we hate this
+        }
+        return result;
     }
 
     bool CanClientCall(Client* client) override {

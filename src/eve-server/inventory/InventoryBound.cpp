@@ -1071,19 +1071,24 @@ bool InventoryBound::Release(Client* client) {
     // Instead this reference will be automatically
     // freed when its removed from the InventoryManager.
     //return EVEBoundObject::Release(client);
-
-    auto clients = GetBoundClients();
-    auto it = clients.find(client);
-    if(it == clients.end()) {
-        return false;
-    }
-
-    RemoveClient(client);
-
-    if(GetBoundClients().empty()) {
+    bool result = EVEBoundObject::SafeRelease(client);
+    if(result) {
         sInventoryManager.Remove(m_self->itemID());
-        return true;
     }
+    return result;
 
-    return false;
+    // auto clients = GetBoundClients();
+    // auto it = clients.find(client);
+    // if(it == clients.end()) {
+    //     return false;
+    // }
+
+    // RemoveClient(client);
+
+    // if(GetBoundClients().empty()) {
+    //     sInventoryManager.Remove(m_self->itemID());
+    //     return true;
+    // }
+
+    // return false;
 }
