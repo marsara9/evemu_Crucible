@@ -251,6 +251,8 @@ PyResult InvBrokerBound::GetInventoryFromId(PyCallArgs &call, PyInt* inventoryID
             ownerID, 
             passive->value()
         );
+
+        sInventoryManager.Add(iRef->itemID(), ib);
     }
 
     ib->NewReference(call.client);
@@ -354,6 +356,8 @@ PyResult InvBrokerBound::GetInventory(PyCallArgs &call, PyInt* containerID, std:
             ownerID, 
             false
         );
+
+        sInventoryManager.Add(iRef->itemID(), ib);
     }
 
     ib->NewReference(call.client);
