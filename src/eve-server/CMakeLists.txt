@@ -301,6 +301,7 @@ SET( inventory_INCLUDE
      "${TARGET_INCLUDE_DIR}/inventory/InventoryBound.h"
      "${TARGET_INCLUDE_DIR}/inventory/InventoryDB.h"
      "${TARGET_INCLUDE_DIR}/inventory/InventoryItem.h"
+     "${TARGET_INCLUDE_DIR}/inventory/InventoryManager.h"
      "${TARGET_INCLUDE_DIR}/inventory/ItemDB.h"
      "${TARGET_INCLUDE_DIR}/inventory/ItemFactory.h"
      "${TARGET_INCLUDE_DIR}/inventory/ItemRef.h"
