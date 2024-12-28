@@ -1065,7 +1065,7 @@ PyResult InventoryBound::Build(PyCallArgs &call) {
 }
 
 void InventoryBound::NewReference(Client* newClient) {
-    sInventoryManager.Add(m_self->itemID(), this);
+    //sInventoryManager.Add(m_self->itemID(), this);
 
     EVEBoundObject::NewReference(newClient);
 }
