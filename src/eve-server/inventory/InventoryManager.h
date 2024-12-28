@@ -51,7 +51,7 @@ public:
      */
     void Add(
         uint32 containerID,
-        InventoryBound* bound
+        InventoryBound* ib
     );
 
     /**

@@ -35,6 +35,7 @@
 #include "effects/EffectsProcessor.h"
 #include "exploration/Probes.h"
 #include "manufacturing/Blueprint.h"
+#include "inventory/InventoryManager.h"
 #include "pos/Structure.h"
 #include "ship/Ship.h"
 #include "ship/modules/ModuleItem.h"
@@ -608,7 +609,8 @@ void InventoryItem::ToVirtual(uint32 locationID)
     //notify about the changes.
     std::map<int32, PyRep *> changes;
     changes[Inv::Update::Location] = new PyInt(m_data.locationID);
-    SendItemChange(m_data.ownerID, changes);   //changes is consumed
+    //SendItemChange(m_data.ownerID, changes);   //changes is consumed
+    NotifyItemChange(changes);
     m_data.locationID = locationID;
 
     //take ourself out of the DB
@@ -685,7 +687,7 @@ void InventoryItem::Donate(uint32 new_owner/*ownerSystem*/, uint32 new_location/
             } else {
                 _log(ITEM__ERROR, "II::Donate() - Cant find location %u containing %s.", m_data.locationID, m_data.name.c_str());
             }
-        }
+        }.value();
     }
 
     // update data
@@ -717,16 +719,18 @@ void InventoryItem::Donate(uint32 new_owner/*ownerSystem*/, uint32 new_location/
             changes[Inv::Update::Owner] = new PyInt(old_owner);
         if (new_location != old_location)
             changes[Inv::Update::Location] = new PyInt(old_location);
-        SendItemChange(m_data.ownerID, changes);
-        if (new_owner != old_owner) {
-            if (new_flag != old_flag)
-                changes[Inv::Update::Flag] = new PyInt(old_flag);
-            if (new_owner != old_owner)
-                changes[Inv::Update::Owner] = new PyInt(old_owner);
-            if (new_location != old_location)
-                changes[Inv::Update::Location] = new PyInt(old_location);
-            SendItemChange(old_owner, changes);
-        }
+        //SendItemChange(m_data.ownerID, changes);
+        NotifyItemChange(changes);
+        // if (new_owner != old_owner) {
+        //     if (new_flag != old_flag)
+        //         changes[Inv::Update::Flag] = new PyInt(old_flag);
+        //     if (new_owner != old_owner)
+        //         changes[Inv::Update::Owner] = new PyInt(old_owner);
+        //     if (new_location != old_location)
+        //         changes[Inv::Update::Location] = new PyInt(old_location);
+        //     //SendItemChange(old_owner, changes);
+        //     NotifyItemChange(changes);
+        // }
     }
 }
 
@@ -791,7 +795,8 @@ void InventoryItem::Move(uint32 new_location/*locTemp*/, EVEItemFlags new_flag/*
             changes[Inv::Update::Location] = new PyInt(old_location);
         if (m_data.flag != old_flag)
             changes[Inv::Update::Flag] = new PyInt(old_flag);
-        SendItemChange(m_data.ownerID, changes);   //changes is consumed
+        //SendItemChange(m_data.ownerID, changes);   //changes is consumed
+        NotifyItemChange(changes);
     }
 }
 
@@ -823,8 +828,7 @@ void InventoryItem::Relocate(uint32 locID, EVEItemFlags flag) {
 
     InventoryItemRef iRef(nullptr);
     uint32 old_location = m_data.locationID;
-    EVEItemFlags old_flag = m_data.flag;
-
+    EVEItemFlags old_flag = m_data.flag;.value();
     // update data
     m_data.flag = flag;
     m_data.locationID = locID;
@@ -853,7 +857,8 @@ void InventoryItem::Relocate(uint32 locID, EVEItemFlags flag) {
         changes[Inv::Update::Location] = new PyInt(old_location);
     if (m_data.flag != old_flag)
         changes[Inv::Update::Flag] = new PyInt(old_flag);
-    SendItemChange(m_data.ownerID, changes);   //changes is consumed
+    //SendItemChange(m_data.ownerID, changes);   //changes is consumed
+    NotifyItemChange(changes);
 }
 
 bool InventoryItem::Merge(InventoryItemRef to_merge, int32 qty/*0*/, bool notify/*true*/) {
@@ -904,7 +909,7 @@ void InventoryItem::MergeTypesInCargo(ShipItem* pShip, EVEItemFlags flag/*flagNo
         return;
     }
     // fix for elusive error when using IB::Add() to remove loaded modules (charge trying to add to module item)
-    if (iRef->typeID() != m_type.id()) {
+    if (iRef->typeID() != m_type.id()) {.value();
         Move(pShip->itemID(), flag, true);
         return;
     }
@@ -963,7 +968,8 @@ bool InventoryItem::SetQuantity(int32 qty, bool notify/*false*/, bool deleteOnZe
     if (notify or (IsCargoHoldFlag(m_data.flag) and (m_type.categoryID() == EVEDB::invCategories::Charge))) {
         std::map<int32, PyRep *> changes;
         changes[Inv::Update::StackSize] = new PyInt(old_qty);
-        SendItemChange(m_data.ownerID, changes); //changes is consumed
+        //SendItemChange(m_data.ownerID, changes); //changes is consumed
+        NotifyItemChange(changes);
     }
 
     // how are we gonna do modules owned by corp here???
@@ -997,7 +1003,8 @@ bool InventoryItem::SetFlag(EVEItemFlags flag, bool notify/*false*/) {
     if (notify) {
         std::map<int32, PyRep *> changes;
         changes[Inv::Update::Flag] = new PyInt(old_flag);
-        SendItemChange(m_data.ownerID, changes); //changes is consumed
+        //SendItemChange(m_data.ownerID, changes); //changes is consumed
+        NotifyItemChange(changes);
     }
 
     return true;
@@ -1024,7 +1031,8 @@ bool InventoryItem::ChangeSingleton(bool singleton, bool notify/*false*/) {
     if (notify) {
         std::map<int32, PyRep *> changes;
         changes[Inv::Update::Singleton] = new PyInt(old_singleton);
-        SendItemChange(m_data.ownerID, changes); //changes is consumed
+        //SendItemChange(m_data.ownerID, changes); //changes is consumed
+        NotifyItemChange(changes);
     }
 
     // must update volume when singleton (packaged state) changes for (mostly) ship items.
@@ -1047,51 +1055,84 @@ void InventoryItem::ChangeOwner(uint32 new_owner, bool notify/*false*/) {
         std::map<int32, PyRep *> changes;
         //send the notify to the new owner.
         changes[Inv::Update::Owner] = new PyInt(old_owner);
-        SendItemChange(new_owner, changes); //changes is consumed
-        //also send the notify to the old owner.
-        changes[Inv::Update::Owner] = new PyInt(old_owner);
-        SendItemChange(old_owner, changes); //changes is consumed
+        NotifyItemChange(changes);
+        // SendItemChange(new_owner, changes); //changes is consumed
+        // //also send the notify to the old owner.
+        // changes[Inv::Update::Owner] = new PyInt(old_owner);
+        // SendItemChange(old_owner, changes); //changes is consumed
     }
 }
 
-//contents of changes are consumed and cleared
-void InventoryItem::SendItemChange(uint32 toID, std::map<int32, PyRep *> &changes) {
-    if (IsNPCCorp(toID) or (toID == 1) or IsFaction(toID))   //IsValidOwner()
-        return;
-    if (sConsole.IsShutdown())
-        return;
-    if (changes.empty())
-        return;
-
+void InventoryItem::NotifyItemChange(
+    std::map<int32, PyRep *> &changes
+) {
     NotifyOnItemChange change;
         change.itemRow = GetItemRow();
         change.changes = changes;
     PyTuple *tmp = change.Encode();
 
-    if (is_log_enabled(ITEM__CHANGE)) {
-        _log(ITEM__CHANGE, "Sending Item changes for %s(%u)", m_data.name.c_str(), m_itemID);
-        tmp->Dump(ITEM__CHANGE, "    ");
+    std::map<Client*, bool> clients;
+    auto current_ib = sInventoryManager.Find(locationID());
+    auto current_clients = current_ib->GetBoundClients();
+    clients.insert(current_clients.begin(), current_clients.end());
+    if(changes.count(Inv::Update::Location) > 0) {
+        uint32 old_location = changes.at(Inv::Update::Location)->IntegerValueU32();
+        auto old_ib = sInventoryManager.Find(old_location);
+        auto old_clients = old_ib->GetBoundClients();
+        clients.insert(old_clients.begin(), old_clients.end());
     }
 
-    //TODO: figure out the appropriate list of interested people...
-    if (IsCharacterID(toID)) {
-        Client* pClient = sEntityList.FindClientByCharID(toID);
-        if (pClient == nullptr)
-            return;
-        if (pClient->IsCharCreation())
-            return;
-        //if (IsShipItem()) //(pClient->IsBoard())
-        //    pClient->SendNotification("OnItemsChanged", "charid", &tmp, false); //unsequenced.  <<--  this is called for multiple items
-        //else
-            pClient->SendNotification("OnItemChange", "clientID", &tmp, false); //unsequenced.  <<-- this is for single items
-    } else if (IsPlayerCorp(toID)) {
-        if (sDataMgr.IsStation(m_data.locationID)) {
-            sEntityList.CorpNotify(toID, Notify::Types::ItemUpdateStation, "OnItemChange","*stationid&corpid", tmp);
-        } else {
-            sEntityList.CorpNotify(toID, Notify::Types::ItemUpdateSystem, "OnItemChange","corpid", tmp);
+    for(auto client = clients.begin(); client != clients.end(); client++) {
+        if (is_log_enabled(ITEM__CHANGE)) {
+            _log(ITEM__CHANGE, "Sending Item changes for %s(%u)", m_data.name.c_str(), m_itemID);
+            tmp->Dump(ITEM__CHANGE, "    ");
         }
+
+        if (client->IsCharCreation())
+            return;
+
+        client->SendNotification("OnItemChange", "clientID", &tmp, false); //unsequenced.  <<-- this is for single items
     }
 }
+
+//contents of changes are consumed and cleared
+// void InventoryItem::SendItemChange(uint32 toID, std::map<int32, PyRep *> &changes) {
+//     if (IsNPCCorp(toID) or (toID == 1) or IsFaction(toID))   //IsValidOwner()
+//         return;
+//     if (sConsole.IsShutdown())
+//         return;
+//     if (changes.empty())
+//         return;
+
+//     NotifyOnItemChange change;
+//         change.itemRow = GetItemRow();
+//         change.changes = changes;
+//     PyTuple *tmp = change.Encode();
+
+//     if (is_log_enabled(ITEM__CHANGE)) {
+//         _log(ITEM__CHANGE, "Sending Item changes for %s(%u)", m_data.name.c_str(), m_itemID);
+//         tmp->Dump(ITEM__CHANGE, "    ");
+//     }
+
+//     //TODO: figure out the appropriate list of interested people...
+//     if (IsCharacterID(toID)) {
+//         Client* pClient = sEntityList.FindClientByCharID(toID);
+//         if (pClient == nullptr)
+//             return;
+//         if (pClient->IsCharCreation())
+//             return;
+//         //if (IsShipItem()) //(pClient->IsBoard())
+//         //    pClient->SendNotification("OnItemsChanged", "charid", &tmp, false); //unsequenced.  <<--  this is called for multiple items
+//         //else
+//             pClient->SendNotification("OnItemChange", "clientID", &tmp, false); //unsequenced.  <<-- this is for single items
+//     } else if (IsPlayerCorp(toID)) {
+//         if (sDataMgr.IsStation(m_data.locationID)) {
+//             sEntityList.CorpNotify(toID, Notify::Types::ItemUpdateStation, "OnItemChange","*stationid&corpid", tmp);
+//         } else {
+//             sEntityList.CorpNotify(toID, Notify::Types::ItemUpdateSystem, "OnItemChange","corpid", tmp);
+//         }
+//     }
+// }
 
 void InventoryItem::SaveItem()
 {

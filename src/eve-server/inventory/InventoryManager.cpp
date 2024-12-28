@@ -28,22 +28,26 @@
 #include "InventoryManager.h"
 
 InventoryBound* InventoryManager::Find(uint32 containerID) {
-    _log(INV__WARNING, "InventoryManager::Find(%u)", containerID);
+    _log(INV__INFO, "InventoryManager::Find(%u)", containerID);
     if(m_boundMap.count(containerID) == 0) {
         _log(INV__WARNING, "No InventoryBound for %u.", containerID);
         return nullptr;
     }
-    return m_boundMap.at(containerID);
+    auto ib = m_boundMap.at(containerID);
+    _log(INV__BIND, "Found InventoryBound (%u) for %u.", ib->GetBoundID(), containerID);
+    return ib;
 }
 
 void InventoryManager::Add(
     uint32 containerID,
-    InventoryBound* bound
+    InventoryBound* ib
 ) {
-    _log(INV__BIND, "Creating InventoryBound for %u.", containerID);
-    if(!m_boundMap.insert(BoundEntry(containerID, bound)).second) {
-        _log(INV__WARNING, "InventoryBound already exists for %u. Skipping add.", containerID);
+    _log(INV__BIND, "Adding InventoryBound for %u.", containerID);
+    if(m_boundMap.count(containerID) != 0 && m_boundMap.at(containerID) != bound) {
+        _log(INV__WARNING, "InventoryBound (%u) already exists for %u. Skipping add.", ib->GetBoundID(), containerID);
+        return;
     }
+    m_boundMap.insert(BoundEntry(containerID, ib));
 }
 
 void InventoryManager::Remove(uint32 containerID) {
