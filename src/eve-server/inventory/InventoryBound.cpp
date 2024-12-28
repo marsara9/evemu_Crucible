@@ -486,7 +486,7 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
             continue;
         }
 
-        auto originLocationID = iRef.get()->locationID;
+        auto originLocationID = iRef.get()->locationID();
 
         if (iRef->typeID() == EVEDB::invTypes::Bookmark) {
             // update this to keep owner/creator and other data
@@ -618,14 +618,14 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
         auto origin = sInventoryManager.Find(originLocationID);
         auto originClients = origin->GetBoundClients();
         auto destinationClients = GetBoundClients();
-        for(auto client = originClients.begin(); client < originClients.end(); client++) {
+        for(auto client = originClients.begin(); client != originClients.end(); client++) {
             std::map<int32, PyRep *> changes;
-            changes[Inv::Update::Location] = new PyInt(old_location);
+            changes[Inv::Update::Location] = new PyInt(originLocationID);
             iRef->SendItemChange(iRef->itemID(), changes);
         }
-        for(auto client = destinationClients.begin(); client < destinationClients.end(); client++) {
+        for(auto client = destinationClients.begin(); client != destinationClients.end(); client++) {
             std::map<int32, PyRep *> changes;
-            changes[Inv::Update::Location] = new PyInt(old_location);
+            changes[Inv::Update::Location] = new PyInt(originLocationID);
             iRef->SendItemChange(iRef->itemID(), changes);
         }
     }
@@ -1058,14 +1058,14 @@ PyResult InventoryBound::Build(PyCallArgs &call) {
     return nullptr;
 }
 
-void InventoryBound::NewReference(Client* newClient) override {
-    sInventoryManager.Add(m_self->itemID, this);
+void InventoryBound::NewReference(Client* newClient) {
+    sInventoryManager.Add(m_self->itemID(), this);
 
     EVEBoundObject::NewReference(newClient);
 }
 
-bool InventoryBound::Release(Client* client) override {
-    sInventoryManager.Remove(this);
+bool InventoryBound::Release(Client* client) {
+    sInventoryManager.Remove(m_self->itemID());
 
-    EVEBoundObject::Release(client);
+    return EVEBoundObject::Release(client);
 }
