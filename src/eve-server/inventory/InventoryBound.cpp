@@ -618,12 +618,12 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
         auto origin = sInventoryManager.Find(originLocationID);
         auto originClients = origin->GetBoundClients();
         auto destinationClients = GetBoundClients();
-        for(auto client = originClients.begin(); client < originClients.end(); client++) {
+        for(auto client = originClients.begin(); client != originClients.end(); client++) {
             std::map<int32, PyRep *> changes;
             changes[Inv::Update::Location] = new PyInt(old_location);
             iRef->SendItemChange(iRef->itemID(), changes);
         }
-        for(auto client = destinationClients.begin(); client < destinationClients.end(); client++) {
+        for(auto client = destinationClients.begin(); client != destinationClients.end(); client++) {
             std::map<int32, PyRep *> changes;
             changes[Inv::Update::Location] = new PyInt(old_location);
             iRef->SendItemChange(iRef->itemID(), changes);
@@ -1065,7 +1065,7 @@ void InventoryBound::NewReference(Client* newClient) {
 }
 
 bool InventoryBound::Release(Client* client) {
-    sInventoryManager.Remove(this);
+    sInventoryManager.Remove(m_self->itemID());
 
-    EVEBoundObject::Release(client);
+    return EVEBoundObject::Release(client);
 }
