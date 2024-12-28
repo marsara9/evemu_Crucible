@@ -241,7 +241,7 @@ PyResult InvBrokerBound::GetInventoryFromId(PyCallArgs &call, PyInt* inventoryID
         }
     }
 
-    InventoryBound* ib = sInventoryManager.Find(iRef->itemID);
+    InventoryBound* ib = sInventoryManager.Find(iRef->itemID());
     if(ib == nullptr) {
         ib = new InventoryBound(
             this->GetServiceManager(), 
@@ -343,7 +343,7 @@ PyResult InvBrokerBound::GetInventory(PyCallArgs &call, PyInt* containerID, std:
             _log(INV__ERROR, "Unhandled container type %u for locationID %u", containerID->value(), m_locationID);
             return nullptr;
     }
-    
+
     InventoryBound* ib = sInventoryManager.Find(item);
     if(ib == nullptr) {
         ib = new InventoryBound(
