@@ -250,12 +250,41 @@ public:
     /**
      * @brief Increases the number of references to this bound object
      */
-    void NewReference (Client* client) override;
+    virtual void NewReference (Client* client) override {
+        // ensure the client is not there yet
+        auto it = this->mClients.find (client);
+
+        if (it != this->mClients.end ())
+            return;
+
+        // the client didn't hold a reference to this service
+        // so add it to the list and increase the RefCount
+        this->mClients.insert_or_assign (client, true);
+        // also add it to the bind list of the client
+        client->AddBindID (this->GetBoundID ());
+    }
     /**
      * @brief Signals this EVEBoundObject that one of the clients that held a reference, released it
      * @returns Whether the bound object was destroyed or someone still has a reference to it
      */
-    bool Release(Client* client) override;
+    virtual bool Release(Client* client) override {
+        auto it = this->mClients.find (client);
+
+        // the client doesn't have access to this bound service, so nothing has to be done
+        if (it == this->mClients.end ())
+            return false;
+
+        // remove the client for the list, and if that's the last one, free the service
+        this->mClients.erase (it);
+
+        if (this->mClients.size () == 0) {
+            this->GetParent ().BoundReleased (reinterpret_cast <Bound*> (this));
+            delete this; // we hate this
+            return true;
+        }
+
+        return false;
+    }
 
     bool CanClientCall(Client* client) override {
         return this->mClients.find (client) != this->mClients.end();
