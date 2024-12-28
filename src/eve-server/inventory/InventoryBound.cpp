@@ -1065,7 +1065,7 @@ void InventoryBound::NewReference(Client* newClient) {
 }
 
 bool InventoryBound::Release(Client* client) {
-    if (mClients.size () == 0) {
+    if (GetBoundClients().empty()) {
         sInventoryManager.Remove(m_self->itemID());
     }
 
