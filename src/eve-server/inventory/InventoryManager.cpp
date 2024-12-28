@@ -28,7 +28,9 @@
 #include "InventoryManager.h"
 
 InventoryBound* InventoryManager::Find(uint32 containerID) {
+    _log(INV__WARNING, "InventoryManager::Find(%u)", containerID);
     if(m_boundMap.count(containerID) == 0) {
+        _log(INV__WARNING, "No InventoryBound for %u.", containerID);
         return nullptr;
     }
     return m_boundMap.at(containerID);
