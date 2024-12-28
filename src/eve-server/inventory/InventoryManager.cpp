@@ -35,12 +35,13 @@
 InventoryBound* InventoryManager::Find(
     uint32 containerID
 ) {
-    auto bound = m_inventoryBoundMap.find(containerID);
-    if(bound == m_inventoryBoundMap.end()) {
-        return nullptr;
-    } else {
-        return bound->second;
-    }
+    // auto bound = m_inventoryBoundMap.find(containerID);
+    // if(bound == m_inventoryBoundMap.end()) {
+    //     return nullptr;
+    // } else {
+    //     return bound->second;
+    // }
+    return nullptr;
 }
 
 void InventoryManager::Add(
