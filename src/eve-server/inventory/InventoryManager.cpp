@@ -51,6 +51,6 @@ void InventoryManager::Add(
 }
 
 void InventoryManager::Remove(uint32 containerID) {
-    _log(INV__BIND, "Disposing of InventoryBound for %s.", containerID);
+    _log(INV__BIND, "Disposing of InventoryBound for %u.", containerID);
     m_boundMap.erase(containerID);
 }
