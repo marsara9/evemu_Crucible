@@ -1066,6 +1066,11 @@ void InventoryItem::ChangeOwner(uint32 new_owner, bool notify/*false*/) {
 void InventoryItem::NotifyItemChange(
     std::map<int32, PyRep *> &changes
 ) {
+    uint32 old_location = locationID();
+    if(changes.count(Inv::Update::Location) > 0) {
+        uint32 old_location = changes.at(Inv::Update::Location)->AsInt()->value();
+    }
+
     NotifyOnItemChange change;
         change.itemRow = GetItemRow();
         change.changes = changes;
@@ -1080,8 +1085,7 @@ void InventoryItem::NotifyItemChange(
 
     auto current_clients = current_ib->GetBoundClients();
     clients.insert(current_clients.begin(), current_clients.end());
-    if(changes.count(Inv::Update::Location) > 0) {
-        uint32 old_location = changes.at(Inv::Update::Location)->AsInt()->value();
+    if(old_location != locationID()) {
         auto old_ib = sInventoryManager.Find(old_location);
         if(old_ib != nullptr) {
             auto old_clients = old_ib->GetBoundClients();
