@@ -313,6 +313,7 @@ SET( inventory_SOURCE
      "${TARGET_SOURCE_DIR}/inventory/InventoryBound.cpp"
      "${TARGET_SOURCE_DIR}/inventory/InventoryDB.cpp"
      "${TARGET_SOURCE_DIR}/inventory/InventoryItem.cpp"
+     "${TARGET_SOURCE_DIR}/inventory/InventoryManager.cpp"
      "${TARGET_SOURCE_DIR}/inventory/ItemDB.cpp"
      "${TARGET_SOURCE_DIR}/inventory/ItemFactory.cpp"
      "${TARGET_SOURCE_DIR}/inventory/ItemType.cpp"
