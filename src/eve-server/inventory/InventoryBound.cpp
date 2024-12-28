@@ -615,19 +615,19 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
             iRef->Donate(m_ownerID, m_itemID, toFlag);
         }
 
-        std::map<Client*, bool> clients;
-        auto destinationClients = GetBoundClients();
-        clients.insert(destinationClients.begin(), destinationClients.end());
-        auto origin = sInventoryManager.Find(originLocationID);
-        if(origin != nullptr) {
-            auto originClients = origin->GetBoundClients();
-            clients.insert(originClients.begin(), originClients.end());
-        }
-        for(auto client = clients.begin(); client != clients.end(); client++) {
-            std::map<int32, PyRep *> changes;
-            changes[Inv::Update::Location] = new PyInt(originLocationID);
-            iRef->SendItemChange(client->first->GetCharacterID(), changes);
-        }
+        // std::map<Client*, bool> clients;
+        // auto destinationClients = GetBoundClients();
+        // clients.insert(destinationClients.begin(), destinationClients.end());
+        // auto origin = sInventoryManager.Find(originLocationID);
+        // if(origin != nullptr) {
+        //     auto originClients = origin->GetBoundClients();
+        //     clients.insert(originClients.begin(), originClients.end());
+        // }
+        // for(auto client = clients.begin(); client != clients.end(); client++) {
+        //     std::map<int32, PyRep *> changes;
+        //     changes[Inv::Update::Location] = new PyInt(originLocationID);
+        //     iRef->SendItemChange(client->first->GetCharacterID(), changes);
+        // }
     }
 
     sItemFactory.UnsetUsingClient();
