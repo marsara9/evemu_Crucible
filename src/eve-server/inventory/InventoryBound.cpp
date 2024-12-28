@@ -615,20 +615,24 @@ PyRep* InventoryBound::MoveItems(Client* pClient, std::vector< int32 >& items, E
             iRef->Donate(m_ownerID, m_itemID, toFlag);
         }
 
-        auto origin = sInventoryManager.Find(originLocationID);
-        if(origin != nullptr) {
-            auto originClients = origin->GetBoundClients();
-            for(auto client = originClients.begin(); client != originClients.end(); client++) {
-                std::map<int32, PyRep *> changes;
-                changes[Inv::Update::Location] = new PyInt(originLocationID);
-                iRef->SendItemChange(iRef->itemID(), changes);
-            }
-        }
         auto destinationClients = GetBoundClients();
         for(auto client = destinationClients.begin(); client != destinationClients.end(); client++) {
             std::map<int32, PyRep *> changes;
             changes[Inv::Update::Location] = new PyInt(originLocationID);
             iRef->SendItemChange(iRef->itemID(), changes);
+        }
+        auto origin = sInventoryManager.Find(originLocationID);
+        if(origin != nullptr) {
+            auto originClients = origin->GetBoundClients();
+            for(auto client = originClients.begin(); client != originClients.end(); client++) {
+                if(destinationClients.count(client) > 0) {
+                    // Client was already notified.
+                    continue;
+                }
+                std::map<int32, PyRep *> changes;
+                changes[Inv::Update::Location] = new PyInt(originLocationID);
+                iRef->SendItemChange(iRef->itemID(), changes);
+            }
         }
     }
 
