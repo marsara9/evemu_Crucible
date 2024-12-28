@@ -34,7 +34,7 @@ InventoryBound* InventoryManager::Find(
     uint32 containerID
 ) {
     auto bound = m_inventoryBoundMap.find(containerID);
-    if(bound = m_inventoryBoundMap.end()) {
+    if(bound == m_inventoryBoundMap.end()) {
         return nullptr;
     } else {
         return bound->second();
@@ -48,8 +48,6 @@ void InventoryManager::Add(
     m_inventoryBoundMap[containerID] = bound;
 }
 
-void InventoryManager::Remove(
-    uint32 containerID,
-) {
+void InventoryManager::Remove(uint32 containerID) {
     m_inventoryBoundMap.erase(containerID);
 }
