@@ -55,12 +55,14 @@ std::shared_ptr<InventoryBound> InventoryManager::FindOrCreate(
     Key key(containerID, ownerID);
 
     _log(INV__INFO, "InventoryManager::FindOrCreate(%u, %u)", key.first, key.second);
-    auto ib = m_boundMap.find(key);
-    if(ib == m_boundMap.end()) {
+    auto f = m_boundMap.find(key);
+    std::shared_ptr<InventoryBound> ib;
+    if(f == m_boundMap.end()) {
         _log(INV__WARNING, "No InventoryBound for %u-%u. Creating.", key.first, key.second);
         ib = create();
         m_boundMap.insert(key, ib);
     } else {
+        ib = f->first;
         _log(INV__BIND, "Found InventoryBound (%u) for %u-%u.", ib->GetBoundID(), key.first, key.second);
     }
     return ib;
