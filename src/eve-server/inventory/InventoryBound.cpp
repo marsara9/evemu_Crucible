@@ -1038,5 +1038,7 @@ PyResult InventoryBound::Build(PyCallArgs &call) {
     oSE->SpawnStationService(call.client, stData, EVEDB::invTypes::RepairService);
     oSE->SpawnStationService(call.client, stData, EVEDB::invTypes::LaboratoryService);
 
+    oSE->SetupProductionLines();
+
     return nullptr;
 }

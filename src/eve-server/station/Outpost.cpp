@@ -37,3 +37,9 @@ void OutpostSE::SpawnStationService(Client* pClient, StationData stData, uint32 
     svcRef->SaveItem();
     pClient->SystemMgr()->AddEntity(svcSE);
 }
+
+void OutpostSE::SetupProductionLines() {
+    DBerror err;
+
+    sDatabase.RunQuery(err, "CALL setupOutpost(%u);", m_self->itemID());
+}

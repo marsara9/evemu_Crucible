@@ -47,6 +47,7 @@ public:
     virtual bool IsOutpostSE()                          { return true; }
 
     virtual void SpawnStationService(Client* pClient, StationData stData, uint32 serviceType);
+    void SetupProductionLines();
 };
 
 #endif  // EVEMU_POS_OUTPOST_H_
