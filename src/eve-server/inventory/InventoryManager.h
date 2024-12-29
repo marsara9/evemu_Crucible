@@ -49,7 +49,7 @@ public:
 
     std::shared_ptr<InventoryBound> FindOrCreate(
         uint32 containerID,
-        uint32 ownerID
+        uint32 ownerID,
         std::function<std::shared_ptr<InventoryBound>()> create
     );
 

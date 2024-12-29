@@ -47,7 +47,7 @@ std::shared_ptr<InventoryBound> InventoryManager::Find(
 
 std::shared_ptr<InventoryBound> InventoryManager::FindOrCreate(
     uint32 containerID,
-    uint32 ownerID
+    uint32 ownerID,
     std::function<std::shared_ptr<InventoryBound>()> create
 ) {
     WriteLock w_lock(m_lock);
