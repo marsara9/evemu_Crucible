@@ -103,7 +103,7 @@ m_delete(false)
 {
     sLog.Error("InventoryItem()", "InventoryItem move c'tor called.");
     EvE::traceStack();
-    assert(0);
+    assert(0);/*0*/
 }
 
 // copy assignment =delete
@@ -1068,7 +1068,11 @@ void InventoryItem::NotifyItemChange(
 ) {
     uint32 old_location = locationID();
     if(changes.count(Inv::Update::Location) > 0) {
-        uint32 old_location = changes.at(Inv::Update::Location)->AsInt()->value();
+        old_location = changes.at(Inv::Update::Location)->AsInt()->value();
+    }
+    unit32 old_owner = ownerID();
+    if(changes.count(Inv::Update::Owner) > 0) {
+        old_owner = changes.at(Inv::Update::Owner)->AsInt()->value();
     }
 
     NotifyOnItemChange change;
@@ -1077,7 +1081,7 @@ void InventoryItem::NotifyItemChange(
     PyTuple *tmp = change.Encode();
 
     std::map<Client*, bool> clients;
-    auto current_ib = sInventoryManager.Find(locationID());
+    auto current_ib = sInventoryManager.Find(locationID(), ownerID());
     if(current_ib == nullptr) {
         // The destination InventoryBound isn't ready yet, so there's nothing to do.
         return;
@@ -1086,7 +1090,7 @@ void InventoryItem::NotifyItemChange(
     auto current_clients = current_ib->GetBoundClients();
     clients.insert(current_clients.begin(), current_clients.end());
     if(old_location != locationID()) {
-        auto old_ib = sInventoryManager.Find(old_location);
+        auto old_ib = sInventoryManager.Find(old_location, old_owner);
         if(old_ib != nullptr) {
             auto old_clients = old_ib->GetBoundClients();
             clients.insert(old_clients.begin(), old_clients.end());

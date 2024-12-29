@@ -241,7 +241,7 @@ PyResult InvBrokerBound::GetInventoryFromId(PyCallArgs &call, PyInt* inventoryID
         }
     }
 
-    std::shared_ptr<InventoryBound> ib = sInventoryManager.Find(iRef->itemID());
+    std::shared_ptr<InventoryBound> ib = sInventoryManager.Find(iRef->itemID(), ownerID);
     if(ib == nullptr) {
         ib = std::make_shared<InventoryBound>(
             this->GetServiceManager(), 

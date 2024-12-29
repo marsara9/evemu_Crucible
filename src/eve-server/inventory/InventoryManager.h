@@ -44,7 +44,7 @@ public:
      */
     std::shared_ptr<InventoryBound> Find(
         uint32 containerID,
-        uint32 ownerID = 0
+        uint32 ownerID
     );
 
     /**
@@ -56,7 +56,7 @@ public:
      */
     void Add(
         uint32 containerID,
-        uint32 ownerID = 0,
+        uint32 ownerID,
         std::shared_ptr<InventoryBound> ib
     );
 
@@ -65,13 +65,13 @@ public:
      */
     void Remove(
         uint32 containerID,
-        uint32 ownerID = 0
+        uint32 ownerID
     );
 private:
     typedef std::pair<uint32, uint32> Key;
     typedef std::map<uint32, std::shared_ptr<InventoryBound>> BoundMap;
     typedef std::pair<Key, std::shared_ptr<InventoryBound>> BoundEntry;
-    
+
     typedef std::shared_mutex Lock;
     typedef std::unique_lock<Lock> WriteLock;
     typedef std::shared_lock<Lock> ReadLock;

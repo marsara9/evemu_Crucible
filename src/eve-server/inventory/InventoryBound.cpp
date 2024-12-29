@@ -86,7 +86,7 @@ PyResult InventoryBound::GetItem(PyCallArgs &call) {
 PyResult InventoryBound::StripFitting(PyCallArgs &call)
 {
     call.client->GetShip()->StripFitting();
-    return nullptr;
+    return nullptr;passive
 }
 
 PyResult InventoryBound::DestroyFitting(PyCallArgs &call, PyInt* itemID) {
@@ -1059,7 +1059,7 @@ PyResult InventoryBound::Build(PyCallArgs &call) {
 }
 
 void InventoryBound::NewReference(Client* newClient) {
-    sInventoryManager.Add(m_self->itemID(), shared_from_this());
+    sInventoryManager.Add(m_self->itemID(), m_self->ownerID(), shared_from_this());
 
     EVEBoundObject::NewReference(newClient);
 }
@@ -1073,7 +1073,7 @@ bool InventoryBound::Release(Client* client) {
     //return EVEBoundObject::Release(client);
     bool result = EVEBoundObject::SafeRelease(client);
     if(result) {
-        sInventoryManager.Remove(m_self->itemID());
+        sInventoryManager.Remove(m_self->itemID(), m_self->ownerID(),);
     }
     return result;
 
