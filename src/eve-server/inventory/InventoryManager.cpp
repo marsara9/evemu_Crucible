@@ -62,7 +62,7 @@ std::shared_ptr<InventoryBound> InventoryManager::FindOrCreate(
         ib = create();
         m_boundMap.insert(key, ib);
     } else {
-        ib = f->first;
+        ib = f->second;
         _log(INV__BIND, "Found InventoryBound (%u) for %u-%u.", ib->GetBoundID(), key.first, key.second);
     }
     return ib;
