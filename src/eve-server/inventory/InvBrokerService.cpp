@@ -253,7 +253,7 @@ PyResult InvBrokerBound::GetInventoryFromId(PyCallArgs &call, PyInt* inventoryID
     //     );
     // }
     std::shared_ptr<InventoryBound> ib = sInventoryManager.FindOrCreate(iRef->itemID(), ownerID, [this, iRef, flag, ownerID, passive]() {
-        std::make_shared<InventoryBound>(
+        return std::make_shared<InventoryBound>(
             this->GetServiceManager(), 
             reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
             iRef, 
@@ -367,7 +367,7 @@ PyResult InvBrokerBound::GetInventory(PyCallArgs &call, PyInt* containerID, std:
     // }
 
     std::shared_ptr<InventoryBound> ib = sInventoryManager.FindOrCreate(item->itemID(), ownerID, [this, item, flag, ownerID]() {
-        std::make_shared<InventoryBound>(
+        return std::make_shared<InventoryBound>(
             this->GetServiceManager(), 
             reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
             item, 
