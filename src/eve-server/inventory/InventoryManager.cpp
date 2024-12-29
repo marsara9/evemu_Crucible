@@ -60,7 +60,7 @@ std::shared_ptr<InventoryBound> InventoryManager::FindOrCreate(
     if(f == m_boundMap.end()) {
         _log(INV__WARNING, "No InventoryBound for %u-%u. Creating.", key.first, key.second);
         ib = create();
-        m_boundMap.insert(key, ib);
+        m_boundMap.insert(BoundEntry(key, ib));
     } else {
         ib = f->second;
         _log(INV__BIND, "Found InventoryBound (%u) for %u-%u.", ib->GetBoundID(), key.first, key.second);
