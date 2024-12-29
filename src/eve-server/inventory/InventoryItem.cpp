@@ -1070,7 +1070,7 @@ void InventoryItem::NotifyItemChange(
     if(changes.count(Inv::Update::Location) > 0) {
         old_location = changes.at(Inv::Update::Location)->AsInt()->value();
     }
-    unit32 old_owner = ownerID();
+    uint32 old_owner = ownerID();
     if(changes.count(Inv::Update::Owner) > 0) {
         old_owner = changes.at(Inv::Update::Owner)->AsInt()->value();
     }

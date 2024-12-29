@@ -69,7 +69,7 @@ public:
     );
 private:
     typedef std::pair<uint32, uint32> Key;
-    typedef std::map<uint32, std::shared_ptr<InventoryBound>> BoundMap;
+    typedef std::map<Key, std::shared_ptr<InventoryBound>> BoundMap;
     typedef std::pair<Key, std::shared_ptr<InventoryBound>> BoundEntry;
 
     typedef std::shared_mutex Lock;
