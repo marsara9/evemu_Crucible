@@ -42,7 +42,10 @@ public:
      * @param containerID The itemID of the container in which to find the associated InventoryBound.
      * @returns The associated InventoryBound or nullptr if no match exists.
      */
-    std::shared_ptr<InventoryBound> Find(uint32 containerID);
+    std::shared_ptr<InventoryBound> Find(
+        uint32 containerID,
+        uint32 ownerID = 0
+    );
 
     /**
      * Adds the provided InventoryBound to be cached.
@@ -53,16 +56,22 @@ public:
      */
     void Add(
         uint32 containerID,
+        uint32 ownerID = 0,
         std::shared_ptr<InventoryBound> ib
     );
 
     /**
      * Removes any InventoryBound associated with the given containerID.
      */
-    void Remove(uint32 containerID);
+    void Remove(
+        uint32 containerID,
+        uint32 ownerID = 0
+    );
 private:
+    typedef std::pair<uint32, uint32> Key;
     typedef std::map<uint32, std::shared_ptr<InventoryBound>> BoundMap;
-    typedef std::pair<uint32, std::shared_ptr<InventoryBound>> BoundEntry;
+    typedef std::pair<Key, std::shared_ptr<InventoryBound>> BoundEntry;
+    
     typedef std::shared_mutex Lock;
     typedef std::unique_lock<Lock> WriteLock;
     typedef std::shared_lock<Lock> ReadLock;
