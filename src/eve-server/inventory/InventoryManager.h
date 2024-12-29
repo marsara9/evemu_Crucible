@@ -47,6 +47,12 @@ public:
         uint32 ownerID
     );
 
+    std::shared_ptr<InventoryBound> FindOrCreate(
+        uint32 containerID,
+        uint32 ownerID
+        std::function<std::shared_ptr<InventoryBound>()> create
+    );
+
     /**
      * Adds the provided InventoryBound to be cached.
      * 

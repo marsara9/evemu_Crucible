@@ -241,9 +241,19 @@ PyResult InvBrokerBound::GetInventoryFromId(PyCallArgs &call, PyInt* inventoryID
         }
     }
 
-    std::shared_ptr<InventoryBound> ib = sInventoryManager.Find(iRef->itemID(), ownerID);
-    if(ib == nullptr) {
-        ib = std::make_shared<InventoryBound>(
+    // std::shared_ptr<InventoryBound> ib = sInventoryManager.Find(iRef->itemID(), ownerID);
+    // if(ib == nullptr) {
+    //     ib = std::make_shared<InventoryBound>(
+    //         this->GetServiceManager(), 
+    //         reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
+    //         iRef, 
+    //         flag, 
+    //         ownerID, 
+    //         passive->value()
+    //     );
+    // }
+    std::shared_ptr<InventoryBound> ib = sInventoryManager.FindOrCreate(iRef->itemID(), ownerID, []() {
+        std::make_shared<InventoryBound>(
             this->GetServiceManager(), 
             reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
             iRef, 
@@ -251,7 +261,7 @@ PyResult InvBrokerBound::GetInventoryFromId(PyCallArgs &call, PyInt* inventoryID
             ownerID, 
             passive->value()
         );
-    }
+    });
 
     ib->NewReference(call.client);
 
@@ -344,9 +354,20 @@ PyResult InvBrokerBound::GetInventory(PyCallArgs &call, PyInt* containerID, std:
             return nullptr;
     }
 
-    std::shared_ptr<InventoryBound> ib = sInventoryManager.Find(item->itemID(), ownerID);
-    if(ib == nullptr) {
-        ib = std::make_shared<InventoryBound>(
+    // std::shared_ptr<InventoryBound> ib = sInventoryManager.Find(item->itemID(), ownerID);
+    // if(ib == nullptr) {
+    //     ib = std::make_shared<InventoryBound>(
+    //         this->GetServiceManager(), 
+    //         reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
+    //         item, 
+    //         flag, 
+    //         ownerID, 
+    //         false
+    //     );
+    // }
+
+    std::shared_ptr<InventoryBound> ib = sInventoryManager.FindOrCreate(iRef->itemID(), ownerID, []() {
+        std::make_shared<InventoryBound>(
             this->GetServiceManager(), 
             reinterpret_cast <BoundServiceParent<InventoryBound>&> (this->GetParent ()), 
             item, 
@@ -354,7 +375,7 @@ PyResult InvBrokerBound::GetInventory(PyCallArgs &call, PyInt* containerID, std:
             ownerID, 
             false
         );
-    }
+    });
 
     ib->NewReference(call.client);
 

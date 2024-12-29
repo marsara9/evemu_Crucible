@@ -45,6 +45,27 @@ std::shared_ptr<InventoryBound> InventoryManager::Find(
     return ib;
 }
 
+std::shared_ptr<InventoryBound> InventoryManager::FindOrCreate(
+    uint32 containerID,
+    uint32 ownerID
+    std::function<std::shared_ptr<InventoryBound>()> create
+) {
+    WriteLock w_lock(m_lock);
+
+    Key key(containerID, ownerID);
+
+    _log(INV__INFO, "InventoryManager::FindOrCreate(%u, %u)", key.first, key.second);
+    auto ib = m_boundMap.find(key);
+    if(ib == m_boundMap.end()) {
+        _log(INV__WARNING, "No InventoryBound for %u-%u. Creating.", key.first, key.second);
+        ib = create();
+        m_boundMap.insert(key, ib);
+    } else {
+        _log(INV__BIND, "Found InventoryBound (%u) for %u-%u.", ib->GetBoundID(), key.first, key.second);
+    }
+    return ib;
+}
+
 void InventoryManager::Add(
     uint32 containerID,
     uint32 ownerID,
